@@ -56,6 +56,12 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
     });
   }
 
+  void clearProductsCount() {
+    setState(() {
+      productsCount = 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +99,18 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                             iconSize: 25,
                           ),
                           AppIconButton(
-                            onTap: () {},
+                            onTap: () {
+                              final products =
+                                  selectedProductsSharedCubit.state.products;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CartPage(
+                                    products: products,
+                                  ),
+                                ),
+                              );
+                            },
                             borderRound: 10,
                             buttonSize: 42,
                             backgroundColor: const Color(0xFF343235),
@@ -132,25 +149,16 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                         widget.product.photoUrls![index],
                                       ),
                                       child: Padding(
-                                        padding: const EdgeInsetsDirectional
-                                            .fromSTEB(0, 8, 0, 8),
-                                        child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: SizedBox(
                                           width: 50,
                                           height: 50,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            shape: BoxShape.rectangle,
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            child: Image.network(
-                                              widget.product.photoUrls![index],
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
+                                          child: AppImage(
+                                            url: widget
+                                                .product.photoUrls![index],
+                                            isFullRounded: true,
+                                            borderRound: 12,
                                           ),
                                         ),
                                       ),
@@ -368,7 +376,7 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                       ),
                                 ),
                                 Text(
-                                  '${widget.product.price}.',
+                                  '${widget.product.price * int.parse(widget.product.packs[selectedPack])}.',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -389,6 +397,17 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
+                                Text(
+                                  '  x$productsCount',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontFamily: 'Manrope',
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
                               ],
                             ),
                             Padding(
@@ -405,9 +424,15 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                   Widget continueButton = TextButton(
                                     child: const Text("Add"),
                                     onPressed: () {
+                                      for (int i = 0; i < productsCount; i++) {
+                                        selectedProductsSharedCubit
+                                            .addProduct(widget.product);
+                                      }
                                       final products =
                                           selectedProductsSharedCubit
-                                              .addProduct(widget.product);
+                                              .state.products;
+                                      clearProductsCount();
+                                      Navigator.of(context).pop();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -439,6 +464,7 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                                   setState(() {
                                                     productsCount--;
                                                   });
+                                                  Navigator.of(context).pop();
                                                 }
                                               },
                                               borderRound: 10,
@@ -455,6 +481,7 @@ class _ItemDetailsPageWidgetState extends State<ItemDetailsPageWidget> {
                                                 setState(() {
                                                   productsCount++;
                                                 });
+                                                Navigator.of(context).pop();
                                               },
                                               borderRound: 10,
                                               buttonSize: 42,

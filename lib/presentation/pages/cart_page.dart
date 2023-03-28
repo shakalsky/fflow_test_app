@@ -1,4 +1,6 @@
 import 'package:fflow_test_app/data/models/product.dart';
+import 'package:fflow_test_app/data/shared/shared_cart_cubit.dart';
+import 'package:fflow_test_app/dependency_injector.dart';
 import 'package:fflow_test_app/presentation/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +25,14 @@ class _CartPageState extends State<CartPage> {
   void dispose() {
     _unfocusNode.dispose();
     super.dispose();
+  }
+
+  double getTotalPrice() {
+    double totalPrice = 0.0;
+    for (var element in widget.products) {
+      totalPrice += element.price;
+    }
+    return totalPrice;
   }
 
   @override
@@ -135,7 +145,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
                                   '${widget.products[index].packs.first}${Product.packTypTextResolver(widget.products[index].packType)}',
                                   style: Theme.of(context)
@@ -148,7 +158,7 @@ class _CartPageState extends State<CartPage> {
                                         fontWeight: FontWeight.w600,
                                       ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -192,7 +202,15 @@ class _CartPageState extends State<CartPage> {
                               ],
                             ),
                             AppIconButton(
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  widget.products.removeAt(index);
+                                });
+
+                                i
+                                    .get<SelectedProductsSharedCubit>()
+                                    .deleteProduct(widget.products[index]);
+                              },
                               borderRound: 30,
                               buttonSize: 30,
                               icon: Icons.delete,
@@ -239,7 +257,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                           ),
                           Text(
-                            '349.',
+                            '${getTotalPrice()}.',
                             style:
                                 Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       fontFamily: 'Manrope',
@@ -316,7 +334,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                           ),
                           Text(
-                            '349.',
+                            '${getTotalPrice()}.',
                             style:
                                 Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       fontFamily: 'Manrope',
