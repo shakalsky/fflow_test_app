@@ -21,13 +21,12 @@ class _HomePageState extends State<HomePage> {
   final _unfocusNode = FocusNode();
   late List<Product> products = [];
 
-  @override
-  void initState() {
+  void getProducts() async {
     final repo = i.get<ProductRepository>();
+    final newProducts = await repo.getProducts();
     setState(() {
-      repo.getProducts().then((value) => products = value);
+      products = newProducts;
     });
-    super.initState();
   }
 
   @override
@@ -119,110 +118,125 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                Expanded(
-                  child: GridView.builder(
-                    itemCount: products.length,
-                    padding: EdgeInsets.zero,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.64,
-                    ),
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (context, index) => Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryHighlight,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          16,
-                          16,
-                          16,
-                          16,
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: AppImage(
-                                url: products[index].photoUrls?.first ??
-                                    'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%2Fimages%3Fk%3Dno%2Bimage%2Bavailable&psig=AOvVaw2aemlY9P34PAMVJFP9CcL_&ust=1680048956115000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCICswJus_f0CFQAAAAAdAAAAABAE',
-                                borderRound: 0,
-                                isFullRounded: true,
-                              ),
+                products.length == 0
+                    ? AppTextButton(
+                        name: 'Загрузить',
+                        height: 40,
+                        borderRound: 10,
+                        backgroundColor: AppColors.primary,
+                        onTap: getProducts,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      )
+                    : Expanded(
+                        child: GridView.builder(
+                          itemCount: products.length,
+                          padding: EdgeInsets.zero,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 0.64,
+                          ),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) => Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryHighlight,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            Padding(
+                            child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0, 8, 0, 0),
-                              child: Text(
-                                products[index].name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                16,
+                                16,
+                                16,
+                                16,
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0, 0, 0, 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              child: Column(
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0, 0, 4, 0),
-                                    child: Icon(
-                                      Icons.grass,
-                                      color: Color(0xFF938C8C),
-                                      size: 15,
+                                  Expanded(
+                                    child: AppImage(
+                                      url: products[index].photoUrls?.first ??
+                                          'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%2Fimages%3Fk%3Dno%2Bimage%2Bavailable&psig=AOvVaw2aemlY9P34PAMVJFP9CcL_&ust=1680048956115000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCICswJus_f0CFQAAAAAdAAAAABAE',
+                                      borderRound: 0,
+                                      isFullRounded: true,
                                     ),
                                   ),
-                                  Text(
-                                    products[index].productType.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.copyWith(
-                                          fontFamily: 'Manrope',
-                                          color: const Color(0xFF797474),
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
+                                  Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            0, 8, 0, 0),
+                                    child: Text(
+                                      products[index].name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            0, 0, 0, 8),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  0, 0, 4, 0),
+                                          child: Icon(
+                                            Icons.grass,
+                                            color: Color(0xFF938C8C),
+                                            size: 15,
+                                          ),
                                         ),
+                                        Text(
+                                          products[index].productType.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontFamily: 'Manrope',
+                                                color: const Color(0xFF797474),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  AppTextButton(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ItemDetailsPageWidget(
+                                            product: products[index],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    name: 'Подробнее',
+                                    height: 24,
+                                    backgroundColor: AppColors.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    borderRound: 10,
                                   ),
                                 ],
                               ),
                             ),
-                            AppTextButton(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ItemDetailsPageWidget(
-                                      product: products[index],
-                                    ),
-                                  ),
-                                );
-                              },
-                              name: 'Подробнее',
-                              height: 24,
-                              backgroundColor: AppColors.primary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              borderRound: 10,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
